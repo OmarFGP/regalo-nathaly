@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Nathaly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #dcdcdcdc;
+            --envelope-main: #f3e5d8;
+            --envelope-flap: #e8dccf;
+            --envelope-shadow: rgba(0,0,0,0.1);
+            --heart-color: #c0392b;
+            --paper-color: #ffffff;
+            --text-color: #444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-color);
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            /* Preparamos el cuerpo para una transición de salida suave */
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        /* Clase que añadiremos con JS para desvanecer la página */
+        body.page-exit {
+            opacity: 0;
+        }
+
+        /* --- EL ESCENARIO --- */
+        .wrapper {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        /* --- CUERPO DEL SOBRE --- */
+        .envelope-body {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--envelope-main);
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 25px var(--envelope-shadow);
+            z-index: 10;
+            clip-path: polygon(0 0, 50% 40%, 100% 0, 100% 100%, 0 100%);
+        }
+        
+        .envelope-bg {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background: #e6dace;
+            border-radius: 0 0 10px 10px;
+            z-index: 1; 
+        }
+
+        /* --- SOLAPA --- */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--envelope-flap);
+            clip-path: polygon(0 0, 100% 0, 50% 55%);
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out;
+            z-index: 20;
+            border-radius: 5px 5px 0 0;
+        }
+
+        /* --- CORAZÓN (Botón) --- */
+        .heart {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            width: 35px;
+            height: 35px;
+            background: var(--heart-color);
+            /* CORRECCIÓN: Rotación exacta que encontraste */
+            transform: translate(-50%, -50%) rotate(318deg);
+            z-index: 25;
+            transition: opacity 0.3s ease;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        
+        .heart::before, .heart::after {
+            content: "";
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            background: var(--heart-color);
+            border-radius: 50%;
+        }
+        
+        .heart::before { top: -17.5px; left: 0; }
+        .heart::after { left: 17.5px; top: 0; }
+
+        /* --- LA CARTA --- */
+        .letter {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 90%;
+            height: 90%;
+            background: var(--paper-color);
+            transform: translate(-50%, 0) scale(0.9);
+            transition: all 0.8s ease-in-out;
+            z-index: 5;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            opacity: 0;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        .letter-content {
+            opacity: 0;
+            transition: opacity 0.5s ease 0.5s;
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .letter h2 {
+            font-family: 'Dancing Script', cursive;
+            color: var(--heart-color);
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        .letter p {
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.4rem;
+            align-self: flex-end;
+            margin-top: 10px;
+            color: #444;
+        }
+
+        /* --- ESTADO ABIERTO (Animaciones) --- */
+        .wrapper.open .flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .wrapper.open .heart {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .wrapper.open .letter {
+            position: fixed; 
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            width: 85%;
+            max-width: 350px;
+            height: auto;
+            max-height: 75vh;
+            z-index: 100;
+            opacity: 1;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+
+        .wrapper.open .letter-content {
+            opacity: 1;
+        }
+
+        /* Fondo oscuro al leer (Overlay) */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
+            z-index: 90;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .wrapper.open + .overlay {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- BOTONES INFERIORES --- */
+        .buttons-container {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            opacity: 0;
+            animation: fadeIn 1s forwards 1.5s;
+            z-index: 10;
+        }
+
+        .btn {
+            background: white;
+            color: #444;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .btn:hover { transform: translateY(-3px); }
+        .btn-primary { 
+            background: var(--heart-color); 
+            color: white; 
+            border: none;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .hint-text {
+            margin-top: 20px;
+            color: #888;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="wrapper" id="envelopeWrapper">
+        <div class="envelope-bg"></div>
+        
+        <div class="letter" id="letter">
+            <div class="letter-content">
+                <h2>Nathaly,</h2>
+                <p>
+                    Hice este detalle pensando en ti, en lo que me provocas y en lo que me nace decirte.
+                    Me gustas, te quiero y te admiro. Admiro la mujer que eres y la forma tan bonita en la que cuidas a nuestra hija.
+                </p>
+                <p>
+                    También me atraes, me despiertas ganas y me encanta tu cercanía. Tu sonrisa, tu mirada y tu forma de estar tienen algo que no pasa desapercibido para mí.
+                </p>
+                <p>
+                    Espero que este detalle te haga sonreír, que te haga sentir querida y deseada, y que te recuerde lo mucho que me gustas.
+                </p>
+                <p><strong>Feliz cumpleaños.</strong></p>
+                <div class="signature">Omar</div>
+            </div>
+        </div>
+
+        <div class="envelope-body"></div>
+        <div class="flap"></div>
+        <div class="heart" id="heartBtn"></div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <p class="hint-text">Toca el corazón para abrir</p>
+
+    <div class="buttons-container">
+        <a href="razones.html" class="btn btn-primary">Ver las 36 Razones</a>
+        <a href="girasol.html" class="btn" id="btnGirasol">Un último detalle 🌻</a>
+    </div>
+
+    <script>
+        const wrapper = document.getElementById('envelopeWrapper');
+        const heartBtn = document.getElementById('heartBtn');
+        const overlay = document.getElementById('overlay');
+        const btnGirasol = document.getElementById('btnGirasol');
+
+        // Función para abrir/cerrar el sobre
+        function toggleEnvelope() {
+            wrapper.classList.toggle('open');
+        }
+
+        heartBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleEnvelope();
+        });
+
+        overlay.addEventListener('click', () => {
+            toggleEnvelope();
+        });
+
+        // --- LÓGICA DE TRANSICIÓN SUAVE AL GIRASOL ---
+        btnGirasol.addEventListener('click', (e) => {
+            // 1. Evitamos que el enlace salte inmediatamente
+            e.preventDefault();
+
+            // 2. Añadimos la clase que hace que el body se desvanezca (opacity: 0)
+            document.body.classList.add('page-exit');
+
+            // 3. Esperamos a que termine la transición (800ms) y luego cambiamos de página
+            setTimeout(() => {
+                window.location.href = 'girasol.html';
+            }, 800); // Este tiempo debe coincidir con el 'transition' del body en CSS
+        });
+
+    </script>
+</body>
+</html>

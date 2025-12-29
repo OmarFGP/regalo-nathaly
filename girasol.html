@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Girasol y Mariposas para Ti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- NUEVO: ANIMACIÓN DE ENTRADA SUAVE --- */
+        @keyframes pageEntrance {
+            0% {
+                opacity: 0;
+                filter: blur(8px); /* Empieza borroso */
+                transform: scale(1.02); /* Un poquito grande */
+            }
+            100% {
+                opacity: 1;
+                filter: blur(0px); /* Se enfoca */
+                transform: scale(1); /* Tamaño normal */
+            }
+        }
+
+        /* Aplicamos la animación al cuerpo de la página */
+        body {
+            animation: pageEntrance 2s ease-out forwards; /* Dura 2 segundos */
+        }
+
+        /* --- ESTILOS DEL GIRASOL --- */
+        .girasol-container { perspective: 1000px; }
+        .head { animation: slow-spin 25s linear infinite; }
+
+        .petal {
+            position: absolute;
+            background: linear-gradient(to top, #ffc400, #ffd54f); 
+            border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+            transform-origin: bottom center;
+            z-index: 10;
+        }
+
+        .center-disk {
+            background: radial-gradient(circle at center, #3e2723 20%, #210f0b 100%);
+            background-image: radial-gradient(#4e342e 67%, transparent 20%), 
+                              radial-gradient(#4e342e 50%, transparent 20%);
+            background-size: 12px 12px;
+            background-position: 0 0, 6px 6px;
+            box-shadow: inset 0 0 25px #1a0a08;
+            z-index: 20;
+        }
+
+        /* --- ANIMACIONES --- */
+        @keyframes sway {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+        @keyframes slow-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .flower-wrapper {
+            animation: sway 4s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+
+        /* --- MARIPOSAS --- */
+        .butterfly-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 60;
+        }
+
+        .butterfly {
+            position: absolute;
+            width: 30px; height: 30px;
+        }
+        .butterfly::before, .butterfly::after {
+            content: ''; position: absolute;
+            width: 18px; height: 28px;
+            background: linear-gradient(45deg, #ffeb3b, #ff9800);
+            border-radius: 50% 50% 20% 50%;
+            top: 0;
+            animation: flap 0.15s ease-in-out infinite alternate;
+        }
+        .butterfly::before { left: 14px; transform-origin: center left; }
+        .butterfly::after { right: 14px; transform-origin: center right; border-radius: 50% 50% 50% 20%; }
+
+        @keyframes flap {
+            from { transform: scaleX(1) rotate(0deg); }
+            to { transform: scaleX(0.4) rotate(10deg); }
+        }
+
+        .fly-1 { animation: path1 18s linear infinite; top: 60%; }
+        .fly-2 { animation: path2 22s linear infinite; top: 30%; animation-delay: -5s; }
+        .fly-3 { animation: path1 20s linear infinite reverse; top: 80%; animation-delay: -10s; transform: scale(0.7); }
+
+        @keyframes path1 {
+            0% { left: -10%; transform: translateY(0) rotate(-10deg); opacity: 0; }
+            10% { opacity: 1; }
+            25% { transform: translateY(-50px) rotate(10deg); }
+            50% { transform: translateY(20px) rotate(-5deg); }
+            75% { transform: translateY(-30px) rotate(5deg); }
+            95% { opacity: 1; }
+            100% { left: 110%; transform: translateY(0) rotate(0deg); opacity: 0; }
+        }
+        @keyframes path2 {
+            0% { right: -10%; transform: translateY(0) scaleX(-1); opacity: 0; }
+            10% { opacity: 1; }
+            50% { transform: translateY(-80px) scaleX(-1); }
+            100% { right: 110%; transform: translateY(30px) scaleX(-1); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-cyan-300 via-sky-200 to-green-100 min-h-screen flex flex-col items-center justify-center overflow-hidden relative">
+
+    <div class="absolute top-10 left-10 w-24 h-8 bg-white opacity-40 rounded-full blur-xl animate-pulse"></div>
+    <div class="absolute top-20 right-10 w-32 h-12 bg-white opacity-30 rounded-full blur-xl animate-pulse delay-700"></div>
+
+    <div class="butterfly-container">
+        <div class="butterfly fly-1"></div>
+        <div class="butterfly fly-2"></div>
+        <div class="butterfly fly-3"></div>
+    </div>
+
+    <div class="flower-wrapper relative mt-10 z-30">
+        <div class="relative w-64 h-64 sm:w-80 sm:h-80 flex items-center justify-center">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 w-5 h-96 bg-gradient-to-b from-green-600 to-green-800 rounded-full shadow-lg z-0 origin-top"></div>
+            <div class="absolute top-[120%] left-1/2 w-24 h-12 bg-green-600 rounded-tr-[100%] rounded-bl-[100%] -translate-x-[120%] rotate-[-20deg] shadow-md border-b-4 border-green-800"></div>
+            <div class="absolute top-[140%] right-1/2 w-20 h-10 bg-green-600 rounded-tl-[100%] rounded-br-[100%] translate-x-[120%] rotate-[20deg] shadow-md border-b-4 border-green-800"></div>
+
+            <div class="head relative w-full h-full flex items-center justify-center">
+                <div id="petals-container" class="absolute inset-0 flex items-center justify-center"></div>
+                <div class="center-disk w-32 h-32 sm:w-40 sm:h-40 rounded-full absolute border-4 border-yellow-800/30"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="z-50 mt-28 sm:mt-36 p-6 mx-4 max-w-sm bg-white/40 backdrop-blur-lg border border-white/60 rounded-2xl shadow-xl text-center transform transition-all hover:scale-105 duration-300">
+        <h2 class="text-3xl font-bold text-yellow-900 mb-3 drop-shadow-sm font-serif">
+            🌻 Para Ti 🌻
+        </h2>
+        
+        <p class="text-gray-900 font-semibold leading-relaxed font-sans text-lg">
+            Que mereces cosas bonitas… y que alguien se tome el tiempo de demostrártelo. 🌻 ¡Gracias por existir!
+        </p>
+    </div>
+
+    <script>
+        const container = document.getElementById('petals-container');
+        const totalPetals = 26; 
+        
+        for (let i = 0; i < totalPetals; i++) {
+            const petal = document.createElement('div');
+            petal.classList.add('petal');
+            petal.style.width = '42px';
+            petal.style.height = '125px';
+            petal.style.bottom = '50%'; 
+            
+            const rotation = (360 / totalPetals) * i;
+            const randomDelay = Math.random() * -5;
+            petal.style.animationDelay = `${randomDelay}s`;
+
+            petal.style.transform = `rotate(${rotation}deg) translateY(-45px)`; 
+            container.appendChild(petal);
+        }
+    </script>
+</body>
+</html>
